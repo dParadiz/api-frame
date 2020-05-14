@@ -1,6 +1,7 @@
 {
   "name": "dparadiz/api-frame",
   "description": "Api infrastructure frame",
+  "minimum-stability": "stable",
   "type": "project",
   "authors": [
     {
