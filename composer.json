@@ -1,0 +1,12 @@
+{
+  "name": "dparadiz/api-frame",
+  "description": "Api infrastructure frame",
+  "type": "project",
+  "authors": [
+    {
+      "name": "DParadiz",
+      "email": "dparadiz@gmail.com"
+    }
+  ],
+  "require": {}
+}
