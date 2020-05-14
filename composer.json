@@ -9,5 +9,16 @@
       "email": "dparadiz@gmail.com"
     }
   ],
-  "require": {}
+  "autoload": {
+    "psr-4": {
+      "Api\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^7.4",
+    "ext-json": "*",
+    "guzzlehttp/psr7": "^1.6",
+    "psr/http-server-middleware": "^1.0",
+    "php-di/php-di": "^6.1"
+  }
 }
