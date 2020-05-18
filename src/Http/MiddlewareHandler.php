@@ -19,11 +19,17 @@ class MiddlewareHandler implements RequestHandlerInterface
         $this->handler = $handler;
     }
 
-    public function addMiddleware(MiddlewareInterface $middleware): MiddlewareHandler
+    /**
+     * @param MiddlewareInterface[] $middleware
+     *
+     * @return MiddlewareHandler
+     */
+    public function withMiddleware(array $middleware): MiddlewareHandler
     {
-        $this->middleware[] = $middleware;
+        $handler = clone $this;
+        $handler->middleware = array_filter($middleware, fn($middleware) => $middleware instanceof MiddlewareInterface);
 
-        return $this;
+        return $handler;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -34,7 +40,7 @@ class MiddlewareHandler implements RequestHandlerInterface
 
         $handler = array_reduce(
             $this->middleware,
-            fn (RequestHandlerInterface $handler, MiddlewareInterface $middleware) => new MiddlewareAwareHandler($handler, $middleware),
+            fn(RequestHandlerInterface $handler, MiddlewareInterface $middleware) => new MiddlewareAwareHandler($handler, $middleware),
             $this->handler
         );
 

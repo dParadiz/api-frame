@@ -1,30 +1,18 @@
 <?php
+
 /**
- * Route configuration
- * [
- *  "static" => [
- *      "/path/" => [
- *          "handler" => "requestHandler",
- *          "middleware" => [
- *              Middleware
- *          ]
- *      ]
- *  ],
- *  "regex" => [
- *      [
- *      "regex" => '',
- * "routeMap" => [
- *      2 => [
- *          "handler" => '',
- *          "middleware" => []
- *          "variables" => []
- *      ]
- *  ]
- *  ]
+ * #Adding static route
  *
- * ]
+ * $routeCollection->static['/path'] = new \Api\Http\Router\PathData("requestHandler", ["Middleware"]);
+ *
+ * #Adding regex route
+ *
+ * $routeCollection->regex['/path/{id}'] = new \Api\Http\Router\RegexGroup(
+ *   'regex',
+ *   [new \Api\Http\Router\PathData("requestHandler", ["Middleware"], ['id'])]
+ * );
  */
-return [
+
+$routeCollection = new \Api\Http\Router\RouteCollection();
 
 
-];

@@ -20,5 +20,11 @@
     "guzzlehttp/psr7": "^1.6",
     "psr/http-server-middleware": "^1.0",
     "php-di/php-di": "^6.1"
+  },
+  "require-dev": {
+    "vimeo/psalm": "^3.11"
+  },
+  "scripts": {
+    "psalm": "vendor/bin/psalm src"
   }
 }

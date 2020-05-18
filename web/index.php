@@ -18,5 +18,5 @@ try {
 }
 
 $request = $container->get(\Psr\Http\Message\ServerRequestInterface::class);
-$application = $container->get(Api\Http\Application::class);
-$application->dispatch($request);
+$dispatcher = $container->get(Api\Http\Dispatcher::class);
+$dispatcher->dispatch($request);
