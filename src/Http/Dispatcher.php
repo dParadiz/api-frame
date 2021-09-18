@@ -9,13 +9,11 @@ use RuntimeException;
 
 class Dispatcher
 {
-    private RouterInterface $router;
-    private EmitterInterface $emitter;
-
-    public function __construct(RouterInterface $router, EmitterInterface $emitter)
+    public function __construct(
+        private RouterInterface  $router,
+        private EmitterInterface $emitter
+    )
     {
-        $this->router = $router;
-        $this->emitter = $emitter;
     }
 
     public function dispatch(ServerRequestInterface $request): void

@@ -8,18 +8,16 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
 
 class Router implements RouterInterface
 {
     public const PATH_VARS_ATTRIBUTE = 'pathVars';
 
-    private RouteCollection $routeCollection;
-    private ContainerInterface $container;
-
-    public function __construct(RouteCollection $routeCollection, ContainerInterface $container)
+    public function __construct(
+        private RouteCollection    $routeCollection,
+        private ContainerInterface $container)
     {
-        $this->routeCollection = $routeCollection;
-        $this->container = $container;
     }
 
     public function getRequestHandler(ServerRequestInterface $request): array
@@ -50,18 +48,12 @@ class Router implements RouterInterface
         throw new Exception\NotFoundException('Route not found');
     }
 
-    /**
-     * @param $pathData
-     *
-     * @return MiddlewareHandler
-     */
     private function prepareHandler(PathData $pathData): RequestHandlerInterface
     {
-        /** @var mixed $handler */ // required to pass psalm check
         $handler = $this->container->get($pathData->handler);
 
         if (!($handler instanceof RequestHandlerInterface)) {
-            throw new \RuntimeException('Invalid request handler type');
+            throw new RuntimeException('Invalid request handler type');
         }
 
         $handlerMiddlewareDecorator = new MiddlewareHandler($handler);
@@ -73,11 +65,10 @@ class Router implements RouterInterface
 
     private function loadMiddleware(string $className): MiddlewareInterface
     {
-        /** @var mixed $middleware */ // required to pass psalm check
         $middleware = $this->container->get($className);
 
         if (!($middleware instanceof MiddlewareInterface)) {
-            throw  new \RuntimeException('Invalid middleware type');
+            throw  new RuntimeException('Invalid middleware type');
         }
 
         return $middleware;

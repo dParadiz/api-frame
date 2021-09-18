@@ -1,4 +1,5 @@
 <?php
+
 namespace Api\Http\Exception;
 
 use RuntimeException;

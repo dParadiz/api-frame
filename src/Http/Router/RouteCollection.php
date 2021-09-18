@@ -8,6 +8,4 @@ class RouteCollection
     public array $static = [];
     /** @var RegexGroup[] */
     public array $regex = [];
-
-
 }

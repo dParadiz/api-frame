@@ -9,14 +9,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MiddlewareAwareHandler implements RequestHandlerInterface
 {
-    private RequestHandlerInterface $handler;
-
-    private MiddlewareInterface $middleware;
-
-    public function __construct(RequestHandlerInterface $handler, MiddlewareInterface $middleware)
+    public function __construct(
+        private RequestHandlerInterface $handler,
+        private MiddlewareInterface     $middleware
+    )
     {
-        $this->handler = $handler;
-        $this->middleware = $middleware;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
