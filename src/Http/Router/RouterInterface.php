@@ -7,8 +7,5 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 interface RouterInterface
 {
-    /**
-     * @return RequestHandlerInterface[]|ServerRequestInterface[]
-     */
-    public function getRequestHandler(ServerRequestInterface $request): array;
+    public function getRequestHandler(ServerRequestInterface $request): RequestHandlerInterface;
 }

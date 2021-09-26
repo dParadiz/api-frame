@@ -3,10 +3,8 @@
 namespace Api\Http\Router;
 
 use Api\Http\Exception;
-use Api\Http\MiddlewareHandler;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 
@@ -20,32 +18,20 @@ class Router implements RouterInterface
     {
     }
 
-    public function getRequestHandler(ServerRequestInterface $request): array
+    public function getRequestHandler(ServerRequestInterface $request): RequestHandlerInterface
     {
         $path = $request->getUri()->getPath();
 
-        if (isset($this->routeCollection->static[$path])) {
-            return [$this->prepareHandler($this->routeCollection->static[$path]), $request];
+        $pathData = $this->routeCollection->match($path);
+
+        if ($pathData === null) {
+            throw new Exception\NotFoundException('Route not found');
+        }
+        if ($pathData->method !== strtoupper($request->getMethod())) {
+            throw new Exception\MethodNotAllowed();
         }
 
-        foreach ($this->routeCollection->regex as $routeChunk) {
-            if (!preg_match($routeChunk->regex, $path, $matches)) {
-                continue;
-            }
-
-            $pathData = $routeChunk->routeMap[count($matches)];
-            $vars = [];
-            $i = 0;
-            foreach ($pathData->variables as $varName) {
-                $vars[$varName] = $matches[++$i];
-            }
-
-            $request = $request->withAttribute(self::PATH_VARS_ATTRIBUTE, $vars);
-
-            return [$this->prepareHandler($pathData), $request];
-        }
-
-        throw new Exception\NotFoundException('Route not found');
+        return $this->prepareHandler($pathData);
     }
 
     private function prepareHandler(PathData $pathData): RequestHandlerInterface
@@ -56,21 +42,8 @@ class Router implements RouterInterface
             throw new RuntimeException('Invalid request handler type');
         }
 
-        $handlerMiddlewareDecorator = new MiddlewareHandler($handler);
-
-        $middleware = array_map([$this, 'loadMiddleware'], $pathData->middleware);
-
-        return $handlerMiddlewareDecorator->withMiddleware($middleware);
+        return $handler;
     }
 
-    private function loadMiddleware(string $className): MiddlewareInterface
-    {
-        $middleware = $this->container->get($className);
 
-        if (!($middleware instanceof MiddlewareInterface)) {
-            throw  new RuntimeException('Invalid middleware type');
-        }
-
-        return $middleware;
-    }
 }

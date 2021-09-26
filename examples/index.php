@@ -1,6 +1,7 @@
 <?php
 
 use DI\ContainerBuilder;
+use Psr\Http\Message\ServerRequestInterface;
 
 require __DIR__ . '/../vendor/autoload.php';
 $env = (string)getenv('ENVIRONMENT');
@@ -17,6 +18,6 @@ try {
     exit;
 }
 
-$request = $container->get(\Psr\Http\Message\ServerRequestInterface::class);
+$request = $container->get(ServerRequestInterface::class);
 $dispatcher = $container->get(Api\Http\Dispatcher::class);
 $dispatcher->dispatch($request);

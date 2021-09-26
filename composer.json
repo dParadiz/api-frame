@@ -1,7 +1,7 @@
 {
   "name": "dparadiz/api-frame",
   "description": "Api infrastructure frame",
-  "minimum-stability": "stable",
+  "minimum-stability": "dev",
   "type": "project",
   "authors": [
     {
@@ -14,15 +14,27 @@
       "Api\\": "src/"
     }
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:dParadiz/workflow.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:dParadiz/dparadiz-work-flow-http-handler.git"
+    }
+  ],
   "require": {
     "php": "^8.0",
     "ext-json": "*",
     "guzzlehttp/psr7": "^1.6",
     "psr/http-server-middleware": "^1.0",
-    "php-di/php-di": "^6.1"
+    "php-di/php-di": "^6.1",
+    "dparadiz/work-flow-http-handler": "dev-main"
   },
   "require-dev": {
-    "phpstan/phpstan": "^0.12.99"
+    "phpstan/phpstan": "^0.12.99",
+    "phpunit/phpunit": "^9.5.0"
   },
   "scripts": {
     "phpstan": "vendor/bin/phpstan  analyse -l 8 src"
