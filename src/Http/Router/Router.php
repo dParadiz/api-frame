@@ -22,14 +22,10 @@ class Router implements RouterInterface
     {
         $path = $request->getUri()->getPath();
 
-        $pathData = $this->routeCollection->match($path);
+        $pathData = $this->routeCollection->match(new Path($path, $request->getMethod()));
 
         if ($pathData === null) {
             throw new Exception\NotFoundException('Route not found');
-        }
-
-        if ($pathData->method !== '' && $pathData->method !== strtoupper($request->getMethod())) {
-            throw new Exception\MethodNotAllowed();
         }
 
         return $this->prepareHandler($pathData);

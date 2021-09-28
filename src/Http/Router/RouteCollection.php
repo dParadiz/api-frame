@@ -34,9 +34,9 @@ class RouteCollection
         return $regexGroup;
     }
 
-    public function match(string $path): ?PathData
+    public function match(Path $path): ?PathData
     {
-        return $this->static[$path] ?? $this->getPathDataFromRegexGroups($path);
+        return $this->static[(string)$path] ?? $this->getPathDataFromRegexGroups((string)$path);
     }
 
     private function getPathDataFromRegexGroups(string $path): ?PathData

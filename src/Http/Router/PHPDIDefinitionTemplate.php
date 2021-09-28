@@ -1,15 +1,24 @@
+
+use Api\Http\Router;
+use Psr\Container\ContainerInterface;
+
 <?php
 /**
  * @var \Api\Http\Router\RouteCollection $collection
- * @var string $containerServiceName
  */
 ?>
 
 return [
-    '<?=$containerServiceName; ?>' => fn (\Psr\Container\ContainerInterface $c) => new \Api\Http\Router\RouteCollection(
+    '@router' => fn (ContainerInterface $c) => new Router\Router(
+        $c->get('@route_collection'), $c
+    ),
+    '@route_collection_builder' => fn (ContainerInterface $c) => new Router\RouteCollectionBuilder(
+        $c->get('@route_collection')
+    ),
+    '@route_collection' => fn (ContainerInterface $c) => new \Api\Http\Router\RouteCollection(
         [
 <?php foreach ($collection->static as $path => $pathData) : ?>
-            '<?=$path?>' => new \Api\Http\Router\PathData('<?=$pathData->method?>', '<?=$pathData->handler?>'),
+            '<?=$path?>' => new \Api\Http\Router\PathData('<?=$pathData->handler?>'),
 <?php endforeach; ?>
         ],
         [
@@ -19,7 +28,6 @@ return [
                 [
 <?php foreach ($regexGroup->routeMap as  $key => $pathData) : ?>
                     '<?=$key?>' => new \Api\Http\Router\PathData(
-                        '<?=$pathData->method?>',
                         '<?=$pathData->handler?>',
                         [
 <?php foreach ($pathData->variables as  $variable) : ?>

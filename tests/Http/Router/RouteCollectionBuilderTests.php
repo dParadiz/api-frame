@@ -2,6 +2,7 @@
 
 namespace Http\Router;
 
+use Api\Http\Router\Path;
 use Api\Http\Router\PathData;
 use Api\Http\Router\RouteCollection;
 use Api\Http\Router\RouteCollectionBuilder;
@@ -14,32 +15,48 @@ class RouteCollectionBuilderTests extends TestCase
 
     public function testUserCanAddStaticRoute()
     {
-        $routeCollectionBuilder = new RouteCollectionBuilder();
+        $routeCollectionBuilder = new RouteCollectionBuilder(new RouteCollection());
         $path = '/test/uri';
         $routeCollectionBuilder->map($path, 'handler', 'GET');
-
         $routeCollection = $routeCollectionBuilder->getCollection();
 
-        $pathData = $routeCollection->match($path);
+        $pathData = $routeCollection->match(new Path($path, 'GET'));
 
         self::assertInstanceOf(PathData::class, $pathData);
-        self::assertEquals('GET', $pathData->method);
         self::assertEquals('handler', $pathData->handler);
+    }
+
+    public function testCanAddSamePathsWithDifferentMethods()
+    {
+        $routeCollectionBuilder = new RouteCollectionBuilder(new RouteCollection());
+        $path = '/test/uri';
+        $routeCollectionBuilder->map($path, 'handler', 'GET');
+        $routeCollectionBuilder->map($path, 'handler2', 'POST');
+        $routeCollection = $routeCollectionBuilder->getCollection();
+
+        $pathData = $routeCollection->match(new Path($path, 'GET'));
+
+        self::assertInstanceOf(PathData::class, $pathData);
+        self::assertEquals('handler', $pathData->handler);
+
+        $pathData = $routeCollection->match(new Path($path, 'POST'));
+
+        self::assertInstanceOf(PathData::class, $pathData);
+        self::assertEquals('handler2', $pathData->handler);
     }
 
     public function testUserCanAddDynamicRoute()
     {
-        $routeCollectionBuilder = new RouteCollectionBuilder();
+        $routeCollectionBuilder = new RouteCollectionBuilder(new RouteCollection());
         $path = '/test/uri/{id}';
         $routeCollectionBuilder->map($path, 'handler', 'GET');
 
         $routeCollection = $routeCollectionBuilder->getCollection();
 
-        $pathData = $routeCollection->match('/test/uri/123');
+        $pathData = $routeCollection->match(new Path('/test/uri/123', 'GET'));
 
         self::assertInstanceOf(PathData::class, $pathData);
         self::assertContains('id', $pathData->variables);
-        self::assertEquals('GET', $pathData->method);
         self::assertEquals('handler', $pathData->handler);
     }
 
@@ -48,7 +65,7 @@ class RouteCollectionBuilderTests extends TestCase
     {
         $paths = $this->getRandomPaths(500);
 
-        $routeCollectionBuilder = new RouteCollectionBuilder();
+        $routeCollectionBuilder = new RouteCollectionBuilder(new RouteCollection());
         foreach ($paths as $path) {
             $routeCollectionBuilder->map($path['path'], $path['handler'], $path['method']);
         }
@@ -57,13 +74,12 @@ class RouteCollectionBuilderTests extends TestCase
 
         foreach ($paths as $path) {
 
-            $pathData = $routeCollection->match($path['matchPath']);
+            $pathData = $routeCollection->match(new Path($path['matchPath'], $path['method']));
 
             self::assertInstanceOf(PathData::class, $pathData);
             foreach ($path['variables'] as $variable) {
                 self::assertContains($variable, $pathData->variables);
             }
-            self::assertEquals($path['method'], $pathData->method);
             self::assertEquals($path['handler'], $pathData->handler);
         }
 
@@ -72,7 +88,7 @@ class RouteCollectionBuilderTests extends TestCase
     private function getRandomPaths(int $num = 1): array
     {
         $paths = [];
-        $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT', ''];
+        $methods = ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT'];
         for ($i = 0; $i <= $num; $i++) {
             $numParams = rand(0, 5);
             $variables = [];
@@ -105,7 +121,7 @@ class RouteCollectionBuilderTests extends TestCase
     {
         $paths = $this->getRandomPaths(100);
 
-        $routeCollectionBuilder = new RouteCollectionBuilder();
+        $routeCollectionBuilder = new RouteCollectionBuilder(new RouteCollection());
         foreach ($paths as $path) {
             $routeCollectionBuilder->map($path['path'], $path['handler'], $path['method']);
         }
@@ -127,13 +143,12 @@ class RouteCollectionBuilderTests extends TestCase
 
         foreach ($paths as $path) {
 
-            $pathData = $collection->match($path['matchPath']);
+            $pathData = $collection->match(new Path($path['matchPath'], $path['method']));
 
             self::assertInstanceOf(PathData::class, $pathData);
             foreach ($path['variables'] as $variable) {
                 self::assertContains($variable, $pathData->variables);
             }
-            self::assertEquals($path['method'], $pathData->method);
             self::assertEquals($path['handler'], $pathData->handler);
         }
     }

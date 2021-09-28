@@ -16,12 +16,11 @@ class RouteCollectionDiPersister
 
     public function persist(RouteCollection $collection, string $fileName): void
     {
-        $containerServiceName = '@route_collection';
         ob_start();
         require __DIR__ . '/PHPDIDefinitionTemplate.php';
         $fileContent = ob_get_clean();
 
-        $fileContent = "<?php\n" . $fileContent;
+        $fileContent = "<?php declare(strict_types=1);\n" . $fileContent;
 
         $this->createCompilationDirectory(dirname($fileName));
         $this->writeFileAtomic($fileName, $fileContent);
@@ -61,6 +60,5 @@ class RouteCollectionDiPersister
             @unlink($tmpFile);
             throw new InvalidArgumentException(sprintf('Error while renaming %s to %s', $tmpFile, $fileName));
         }
-
     }
 }
