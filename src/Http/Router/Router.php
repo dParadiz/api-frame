@@ -27,7 +27,8 @@ class Router implements RouterInterface
         if ($pathData === null) {
             throw new Exception\NotFoundException('Route not found');
         }
-        if ($pathData->method !== strtoupper($request->getMethod())) {
+
+        if ($pathData->method !== '' && $pathData->method !== strtoupper($request->getMethod())) {
             throw new Exception\MethodNotAllowed();
         }
 

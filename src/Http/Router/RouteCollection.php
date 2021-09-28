@@ -9,6 +9,17 @@ class RouteCollection
     /** @var RegexGroup[] */
     public array $regex = [];
 
+    /**
+     * @param PathData[] $static
+     * @param RegexGroup[] $regex
+     */
+    public function __construct(array $static = [], array $regex = [])
+    {
+        $this->static = $static;
+        $this->regex = $regex;
+    }
+
+
     public function getLastRegexGroup(): RegexGroup
     {
         $lastKey = array_key_last($this->regex);

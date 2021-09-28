@@ -2,40 +2,46 @@
 
 namespace Api\Http\Router;
 
-use Psr\Http\Server\MiddlewareInterface;
-
 class RouteCollectionBuilder
 {
+    private int $maxRegexGroupSize = 20;
+    private RouteCollection $collection;
 
-    const MAX_REGEX_GROUP_SIZE = 20;
-    private RouteCollection $routeCollection;
-    // TODO cache route collection
-
-
-    public function __construct(?RouteCollection $routeCollection = null)
+    public function __construct()
     {
-        $this->routeCollection = $routeCollection !== null ? $routeCollection : new RouteCollection();
+        $this->collection = new RouteCollection();
+    }
+
+    public function maxRegexGroupSize(int $size): self
+    {
+        $this->maxRegexGroupSize = $size;
+
+        return $this;
+    }
+
+    public function use(RouteCollection $routeCollection): self
+    {
+        $this->collection = $routeCollection;
+
+        return $this;
     }
 
 
-    /**
-     * @param MiddlewareInterface[] $middleware
-     */
-    public function map(string $method, string $path, string $handler, array $middleware = []): self
+    public function map(string $path, string $handler, string $method = ''): self
     {
         $pathData = $this->preparePathData($path, $method, $handler);
 
         if ($pathData->hasVariables()) {
-            $regexGroup = $this->routeCollection->getLastRegexGroup();
+            $regexGroup = $this->collection->getLastRegexGroup();
 
-            if (count($regexGroup->routeMap) >= self::MAX_REGEX_GROUP_SIZE) {
+            if (count($regexGroup->routeMap) >= $this->maxRegexGroupSize) {
                 $regexGroup = new RegexGroup();
-                $this->routeCollection->regex[] = $regexGroup;
+                $this->collection->regex[] = $regexGroup;
             }
 
             $regexGroup->map($path, $pathData);
         } else {
-            $this->routeCollection->static[$path] = $pathData;
+            $this->collection->static[$path] = $pathData;
         }
 
         return $this;
@@ -50,9 +56,9 @@ class RouteCollectionBuilder
         return new PathData($method, $handler, $variables);
     }
 
-    public function getRouteCollection(): RouteCollection
+    public function getCollection(): RouteCollection
     {
-        return $this->routeCollection;
+        return $this->collection;
     }
 
 }
