@@ -1,10 +1,10 @@
 
-use Api\Http\Router;
+use ApiFrame\Http\Router;
 use Psr\Container\ContainerInterface;
 
 <?php
 /**
- * @var \Api\Http\Router\RouteCollection $collection
+ * @var \ApiFrame\Http\Router\RouteCollection $collection
  */
 ?>
 
@@ -15,19 +15,19 @@ return [
     '@route_collection_builder' => fn (ContainerInterface $c) => new Router\RouteCollectionBuilder(
         $c->get('@route_collection')
     ),
-    '@route_collection' => fn (ContainerInterface $c) => new \Api\Http\Router\RouteCollection(
+    '@route_collection' => fn (ContainerInterface $c) => new Router\RouteCollection(
         [
 <?php foreach ($collection->static as $path => $pathData) : ?>
-            '<?=$path?>' => new \Api\Http\Router\PathData('<?=$pathData->handler?>'),
+            '<?=$path?>' => new Router\PathData('<?=$pathData->handler?>'),
 <?php endforeach; ?>
         ],
         [
 <?php foreach ($collection->regex as  $regexGroup) : ?>
-            new \Api\Http\Router\RegexGroup(
+            new Router\RegexGroup(
                 '<?=$regexGroup->regex?>',
                 [
 <?php foreach ($regexGroup->routeMap as  $key => $pathData) : ?>
-                    '<?=$key?>' => new \Api\Http\Router\PathData(
+                    '<?=$key?>' => new Router\PathData(
                         '<?=$pathData->handler?>',
                         [
 <?php foreach ($pathData->variables as  $variable) : ?>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Http\Router;
+namespace ApiFrame\Http\Router;
 
 class Path
 {

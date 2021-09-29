@@ -1,8 +1,8 @@
 <?php
 
-namespace Api\Http;
+namespace ApiFrame\Http;
 
-use Api\Http\Router\RouterInterface;
+use ApiFrame\Http\Router\RouterInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Dispatcher

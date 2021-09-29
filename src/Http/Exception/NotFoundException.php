@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Http\Exception;
+namespace ApiFrame\Http\Exception;
 
 use RuntimeException;
 

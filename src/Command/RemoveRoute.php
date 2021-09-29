@@ -1,10 +1,10 @@
 <?php
 
-namespace Api\Command;
+namespace ApiFrame\Command;
 
-use Api\Http\Router\RouteCollection;
-use Api\Http\Router\RouteCollectionBuilder;
-use Api\Http\Router\RouteCollectionDiPersister;
+use ApiFrame\Http\Router\RouteCollection;
+use ApiFrame\Http\Router\RouteCollectionBuilder;
+use ApiFrame\Http\Router\RouteCollectionDiPersister;
 use DI\ContainerBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\RuntimeException;

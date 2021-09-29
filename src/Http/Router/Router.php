@@ -1,8 +1,8 @@
 <?php
 
-namespace Api\Http\Router;
+namespace ApiFrame\Http\Router;
 
-use Api\Http\Exception;
+use ApiFrame\Http\Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

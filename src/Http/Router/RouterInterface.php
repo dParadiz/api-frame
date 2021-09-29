@@ -1,6 +1,6 @@
 <?php
 
-namespace Api\Http\Router;
+namespace ApiFrame\Http\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

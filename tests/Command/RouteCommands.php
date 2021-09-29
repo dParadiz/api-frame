@@ -2,9 +2,9 @@
 
 namespace Command;
 
-use Api\Command\AddRoute;
-use Api\Command\RemoveRoute;
-use Api\Http\Router\Router;
+use ApiFrame\Command\AddRoute;
+use ApiFrame\Command\RemoveRoute;
+use ApiFrame\Http\Router\Router;
 use DI\Container;
 use DI\ContainerBuilder;
 use PHPUnit\Framework\TestCase;

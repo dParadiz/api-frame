@@ -2,11 +2,11 @@
 
 namespace Http\Router;
 
-use Api\Http\Router\Path;
-use Api\Http\Router\PathData;
-use Api\Http\Router\RouteCollection;
-use Api\Http\Router\RouteCollectionBuilder;
-use Api\Http\Router\RouteCollectionDiPersister;
+use ApiFrame\Http\Router\Path;
+use ApiFrame\Http\Router\PathData;
+use ApiFrame\Http\Router\RouteCollection;
+use ApiFrame\Http\Router\RouteCollectionBuilder;
+use ApiFrame\Http\Router\RouteCollectionDiPersister;
 use DI\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
 
