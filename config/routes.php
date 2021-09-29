@@ -1,18 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
-/**
- * #Adding static route
- *
- * $routeCollection->static['/path'] = new \Api\Http\Router\PathData("requestHandler", ["Middleware"]);
- *
- * #Adding regex route
- *
- * $routeCollection->regex['/path/{id}'] = new \Api\Http\Router\RegexGroup(
- *   'regex',
- *   [new \Api\Http\Router\PathData("requestHandler", ["Middleware"], ['id'])]
- * );
- */
+use ApiFrame\Http\Router;
+use Psr\Container\ContainerInterface;
 
-$routeCollection = new \Api\Http\Router\RouteCollection();
-
-
+return [
+    '@router' => fn (ContainerInterface $c) => new Router\Router(
+        $c->get('@route_collection'), $c
+    ),
+    '@route_collection_builder' => fn (ContainerInterface $c) => new Router\RouteCollectionBuilder(
+        $c->get('@route_collection')
+    ),
+    '@route_collection' => fn (ContainerInterface $c) => new Router\RouteCollection(),
+];
