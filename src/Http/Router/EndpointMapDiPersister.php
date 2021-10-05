@@ -4,7 +4,7 @@ namespace ApiFrame\Http\Router;
 
 use InvalidArgumentException;
 
-class RouteCollectionDiPersister
+class EndpointMapDiPersister
 {
 
     public function __construct(
@@ -14,7 +14,7 @@ class RouteCollectionDiPersister
     {
     }
 
-    public function persist(RouteCollection $collection, string $fileName): void
+    public function persist(EndpointMap $set, string $fileName): void
     {
         ob_start();
         require __DIR__ . '/PHPDIDefinitionTemplate.php';

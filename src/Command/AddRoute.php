@@ -2,9 +2,9 @@
 
 namespace ApiFrame\Command;
 
-use ApiFrame\Http\Router\RouteCollection;
-use ApiFrame\Http\Router\RouteCollectionBuilder;
-use ApiFrame\Http\Router\RouteCollectionDiPersister;
+use ApiFrame\Http\Router\Endpoint;
+use ApiFrame\Http\Router\EndpointMap;
+use ApiFrame\Http\Router\EndpointMapDiPersister;
 use DI\ContainerBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -36,31 +36,31 @@ class AddRoute extends Command
         $method = (string)$input->getArgument('method');
 
         if (!file_exists($this->routeConfigFile)) {
-            $this->saveRouterConfig($this->routeConfigFile, new RouteCollection());
+            $this->saveRouterConfig($this->routeConfigFile, new EndpointMap());
         }
 
         $routeDefinitions = require $this->routeConfigFile;
 
         $di = (new ContainerBuilder())->addDefinitions($routeDefinitions)->build();
 
-        $routeCollectionBuilder = $di->get('@route_collection_builder');
+        $endpointSet = $di->get('@endpoint_map');
 
-        if (!($routeCollectionBuilder instanceof RouteCollectionBuilder)) {
+        if (!($endpointSet instanceof EndpointMap)) {
             throw new \RuntimeException('@route_collection_builder is not instance of RouteCollectionBuilder ');
         }
 
-        $routeCollectionBuilder->map($path, $handler, $method);
+        $endpointSet->map(new Endpoint($method, $path), $handler);
 
-        $this->saveRouterConfig($this->routeConfigFile, $routeCollectionBuilder->getCollection());
+        $this->saveRouterConfig($this->routeConfigFile, $endpointSet);
 
 
         return Command::SUCCESS;
     }
 
-    private function saveRouterConfig(string $filename, RouteCollection $collection): void
+    private function saveRouterConfig(string $filename, EndpointMap $set): void
     {
-        $filePersister = new RouteCollectionDiPersister();
+        $filePersister = new EndpointMapDiPersister();
 
-        $filePersister->persist($collection, $filename);
+        $filePersister->persist($set, $filename);
     }
 }

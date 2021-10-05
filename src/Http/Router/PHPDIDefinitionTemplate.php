@@ -4,36 +4,35 @@ use Psr\Container\ContainerInterface;
 
 <?php
 /**
- * @var \ApiFrame\Http\Router\RouteCollection $collection
+ * @var \ApiFrame\Http\Router\EndpointMap $set
  */
 ?>
 
 return [
-    '@router' => fn (ContainerInterface $c) => new Router\Router(
-        $c->get('@route_collection'), $c
-    ),
-    '@route_collection_builder' => fn (ContainerInterface $c) => new Router\RouteCollectionBuilder(
-        $c->get('@route_collection')
-    ),
-    '@route_collection' => fn (ContainerInterface $c) => new Router\RouteCollection(
+    '@endpoint_map' => fn (ContainerInterface $c) => new Router\EndpointMap(
         [
-<?php foreach ($collection->static as $path => $pathData) : ?>
-            '<?=$path?>' => new Router\PathData('<?=$pathData->handler?>'),
+<?php foreach ($set->getStaticEndpoints() as $path => $endpointMatch) : ?>
+            '<?=$path?>' => new Router\MapEntry(
+                new Router\Endpoint(
+                    '<?= $endpointMatch->endpoint->method;?>',
+                    '<?= $endpointMatch->endpoint->path;?>',
+                ),
+                '<?=$endpointMatch->handler?>'
+            ),
 <?php endforeach; ?>
         ],
         [
-<?php foreach ($collection->regex as  $regexGroup) : ?>
+<?php foreach ($set->getRegexGroups() as $regexGroup) : ?>
             new Router\RegexGroup(
                 '<?=$regexGroup->regex?>',
                 [
-<?php foreach ($regexGroup->routeMap as  $key => $pathData) : ?>
-                    '<?=$key?>' => new Router\PathData(
-                        '<?=$pathData->handler?>',
-                        [
-<?php foreach ($pathData->variables as  $variable) : ?>
-                            '<?=$variable?>',
-<?php endforeach; ?>
-                        ]
+<?php foreach ($regexGroup->routeMap as  $key => $endpointMatch) : ?>
+                    '<?=$key?>' => new Router\MapEntry(
+                        new Router\Endpoint(
+                            '<?= $endpointMatch->endpoint->method;?>',
+                            '<?= $endpointMatch->endpoint->path;?>',
+                        ),
+                        '<?=$endpointMatch->handler?>',
                     ),
 <?php endforeach; ?>
                 ]

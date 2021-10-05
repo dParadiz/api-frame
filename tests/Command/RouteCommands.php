@@ -4,13 +4,13 @@ namespace Command;
 
 use ApiFrame\Command\AddRoute;
 use ApiFrame\Command\RemoveRoute;
-use ApiFrame\Http\Router\Router;
+use ApiFrame\Http\Router\Endpoint;
+use ApiFrame\Http\Router\EndpointMap;
+use ApiFrame\Http\Router\EndpointMapDiPersister;
+use ApiFrame\Http\Router\MapEntry;
 use DI\Container;
 use DI\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -36,19 +36,24 @@ class RouteCommands extends TestCase
         self::assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
 
         $di = $this->getDiFromFile($this->diConfigFile);
-        $di->set('handler_class', $this->getMockBuilder(RequestHandlerInterface::class)->getMock());
 
-        $router = $di->get('@router');
-        self::assertInstanceOf(Router::class, $router);
+        $set = $di->get('@endpoint_map');
+        self::assertInstanceOf(EndpointMap::class, $set);
 
-        $request = $this->reqeust('/test/static/path/1', 'GET');
-        $handler = $router->getRequestHandler($request);
+        $endpointMatch = $set->match(new Endpoint('GET', '/test/static/path/1'));
 
-        self::assertInstanceOf(RequestHandlerInterface::class, $handler);
+
+        self::assertInstanceOf(MapEntry::class, $endpointMatch);
     }
 
     public function testRemovingRoute()
     {
+        $endpointMap = new EndpointMap();
+        $endpointMap->map(new Endpoint('GET', '/test/static/path/{id}'), 'h1');
+
+        $filePersister = new EndpointMapDiPersister();
+        $filePersister->persist($endpointMap, $this->diConfigFile);
+
         $commandTester = new CommandTester(new RemoveRoute($this->diConfigFile));
         $commandTester->execute([
             'path' => '/test/static/path/{id}',
@@ -58,28 +63,16 @@ class RouteCommands extends TestCase
         self::assertEquals(Command::SUCCESS, $commandTester->getStatusCode());
 
         $di = $this->getDiFromFile($this->diConfigFile);
-        $di->set('handler_class', $this->getMockBuilder(RequestHandlerInterface::class)->getMock());
 
-        $router = $di->get('@router');
-        self::assertInstanceOf(Router::class, $router);
+        $endpointMap = $di->get('@endpoint_map');
+        self::assertInstanceOf(EndpointMap::class, $endpointMap);
 
-        $request = $this->reqeust('/test/static/path/1', 'GET');
-        $handler = $router->getRequestHandler($request);
 
-        self::assertInstanceOf(RequestHandlerInterface::class, $handler);
+        $mapEntry = $endpointMap->match(new Endpoint('GET', '/test/static/path/{id}'));
+
+        self::assertNull($mapEntry);
     }
 
-    private function reqeust(string $path, string $method): ServerRequestInterface
-    {
-        $uri = $this->getMockBuilder(UriInterface::class)->getMock();
-        $uri->method('getPath')->willReturn($path);
-
-        $request = $this->getMockBuilder(ServerRequestInterface::class)->getMock();
-        $request->method('getMethod')->willReturn($method);
-        $request->method('getUri')->willReturn($uri);
-
-        return $request;
-    }
 
     private function getDiFromFile(string $fileName): Container
     {

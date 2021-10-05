@@ -2,9 +2,9 @@
 
 namespace ApiFrame\Command;
 
-use ApiFrame\Http\Router\RouteCollection;
-use ApiFrame\Http\Router\RouteCollectionBuilder;
-use ApiFrame\Http\Router\RouteCollectionDiPersister;
+use ApiFrame\Http\Router\Endpoint;
+use ApiFrame\Http\Router\EndpointMap;
+use ApiFrame\Http\Router\EndpointMapDiPersister;
 use DI\ContainerBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\RuntimeException;
@@ -42,23 +42,23 @@ class RemoveRoute extends Command
 
         $di = (new ContainerBuilder())->addDefinitions($routeDefinitions)->build();
 
-        $routeCollectionBuilder = $di->get('@route_collection_builder');
+        $endpointMap = $di->get('@endpoint_map');
 
-        if (!($routeCollectionBuilder instanceof RouteCollectionBuilder)) {
-            throw new RuntimeException('@route_collection_builder is not instance of RouteCollectionBuilder ');
+        if (!($endpointMap instanceof EndpointMap)) {
+            throw new RuntimeException('@endpoint_map is not instance of EndpointMap ');
         }
 
-        $routeCollectionBuilder->remove($path, $method);
+        $endpointMap->remove(new Endpoint($method, $path));
 
-        $this->saveRouterConfig($this->routeConfigFile, $routeCollectionBuilder->getCollection());
+        $this->saveRouterConfig($this->routeConfigFile, $endpointMap);
 
 
         return Command::SUCCESS;
     }
 
-    private function saveRouterConfig(string $filename, RouteCollection $collection): void
+    private function saveRouterConfig(string $filename, EndpointMap $collection): void
     {
-        $filePersister = new RouteCollectionDiPersister();
+        $filePersister = new EndpointMapDiPersister();
 
         $filePersister->persist($collection, $filename);
     }
